@@ -226,6 +226,8 @@
           document.documentElement.requestFullscreen();
           document.getElementById("fullScreenBtn").innerHTML =
             "Exit full screen";
+
+          document.getElementById("bsid").style.height = "300px";
         } else {
           if (document.exitFullscreen) {
             document.exitFullscreen();
