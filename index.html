@@ -30,6 +30,25 @@
   </head>
 
   <body bgcolor="#000000">
+    <div style="display: flex; justify-self: center">
+      <h3
+        style="
+          color: #ffffff;
+          padding-bottom: 0px;
+          padding-left: 50px;
+          font-weight: bold;
+        "
+      >
+        Play Chess Against AI
+      </h3>
+      <button
+        id="fullScreenBtn"
+        style="height: 30px; margin: auto; margin-left: 20px"
+        onclick="toggleFullScreen()"
+      >
+        Full screen
+      </button>
+    </div>
     <div class="content">
       <!-- <span align="center">
         <h2
@@ -41,9 +60,6 @@
         <br />
       </span> -->
       <div class="chess-area">
-        <h3 style="color: #ffffff; padding-bottom: 0px; font-weight: bold">
-          Play Chess Against AI
-        </h3>
         <div class="board-table">
           <div id="board-top-controls" class="top-controls">
             <div id="game-promotion" class="promotion hidden">
@@ -199,6 +215,25 @@
     <script src="js/libs/ltpgnviewer.js"></script>
 
     <script>
+      window.addEventListener("resize", () => {
+        if (board && board.resize) {
+          board.resize();
+        }
+      });
+
+      function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen();
+          document.getElementById("fullScreenBtn").innerHTML =
+            "Exit full screen";
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+            document.getElementById("fullScreenBtn").innerHTML = "Full screen";
+          }
+        }
+      }
+
       function is_touch_device() {
         return "ontouchstart" in window || navigator.maxTouchPoints;
       }

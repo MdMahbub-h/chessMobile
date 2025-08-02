@@ -1,10 +1,8 @@
 // Right panel control buttons logic
 
 // Reset board to classic starting position
-
 $("#btn-new-game").click(function () {
   console.log("Making new game.");
-
   gameStarted = false;
   gameEnd = false;
 
@@ -23,43 +21,26 @@ $("#btn-new-game").click(function () {
   $("#btn-undo-move").addClass("hidden");
   $("#game-state").addClass("hidden");
 
-  document.getElementById("btn-switch-sides").disabled = false;
-  $("#btn-switch-sides").removeClass("disabled");
-
-  document.getElementById("btn-show-hint").disabled = false;
-  $("#btn-show-hint").removeClass("disabled");
-
-  // setBoard();
+  $("#btn-switch-sides").prop("disabled", false).removeClass("disabled");
+  $("#btn-show-hint").prop("disabled", false).removeClass("disabled");
 
   game = new Chess("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
   board.position("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
-  if (playerSide == "b") {
-    game = new Chess(
-      "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1"
-    );
+  if (playerSide === "b") {
+    game.load("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1");
     board.position("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1");
-
     opponentTurn();
   } else {
-    game = new Chess(
-      "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-    );
     board.position("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-
-    // unlock if locked
     $("#board").removeClass("locked");
-
-    // reset turns history
     $("#game-turns-history ol").html("");
   }
 });
 
 // Empty board and enable custom pieces
-
 $("#btn-empty-board").click(function () {
   stopTimer();
-
   $("#game-timer").addClass("hidden");
   $("#btn-choose-white-side, #btn-choose-black-side").removeClass("locked");
   $("#btn-undo-move").addClass("hidden");
@@ -77,23 +58,17 @@ $("#btn-empty-board").click(function () {
   });
 
   boardPieces = true;
-
   $("#game-turn").addClass("hidden");
 });
 
-// Load PGN string popup
-
+// Load PGN
 $("#btn-load-pgn").click(function () {
-  if ($("#board-load-pgn-area").hasClass("hidden")) {
-    $("#board-load-fen-area, #board-save-pgn-area").addClass("hidden");
-    $("#board-load-pgn-area")
-      .removeClass("hidden")
-      .find("textarea")
-      .focus()
-      .select();
-  } else {
-    $("#board-load-pgn-area").addClass("hidden");
-  }
+  $("#board-load-fen-area, #board-save-pgn-area").addClass("hidden");
+  $("#board-load-pgn-area")
+    .toggleClass("hidden")
+    .find("textarea")
+    .focus()
+    .select();
 });
 
 $("#board-load-pgn-area button").click(function () {
@@ -102,34 +77,31 @@ $("#board-load-pgn-area button").click(function () {
 });
 
 $("#board-load-pgn-area textarea").keydown(function (e) {
-  e.preventDefault();
-  var code = e.keyCode ? e.keyCode : e.which;
-  if (code == 13) {
+  if (e.keyCode === 13) {
+    e.preventDefault();
     eventLoadPgnData();
     $("#board-load-pgn-area").addClass("hidden");
   }
 });
 
 function eventLoadPgnData() {
-  if ($("#board-load-pgn-area textarea").val() == "") return;
+  const pgn = $("#board-load-pgn-area textarea").val();
+  if (!pgn) return;
 
-  var fenString = "";
   Init("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-  SetPgnMoveText($("#board-load-pgn-area textarea").val());
-  var ff = "",
-    ff_new = "",
-    ff_old;
+  SetPgnMoveText(pgn);
+  let ff_new = "",
+    ff_old = "",
+    fenString = "";
 
   do {
     ff_old = ff_new;
     MoveForward(1);
     ff_new = GetFEN();
-    if (ff_old != ff_new) ff += ff_new + "\n";
-    fenString = ff_new;
-  } while (ff_old != ff_new);
+    if (ff_old !== ff_new) fenString = ff_new;
+  } while (ff_old !== ff_new);
 
   console.log("PGN converted to FEN: " + fenString);
-
   loadBoard(fenString);
   checkTurn();
   checkAnalyzeOption();
@@ -139,19 +111,14 @@ $("#board-load-pgn-area .close").click(function () {
   $("#board-load-pgn-area").addClass("hidden");
 });
 
-// Load FEN string popup
-
+// Load FEN
 $("#btn-load-fen").click(function () {
-  if ($("#board-load-fen-area").hasClass("hidden")) {
-    $("#board-load-pgn-area, #board-save-pgn-area").addClass("hidden");
-    $("#board-load-fen-area")
-      .removeClass("hidden")
-      .find("textarea")
-      .focus()
-      .select();
-  } else {
-    $("#board-load-fen-area").addClass("hidden");
-  }
+  $("#board-load-pgn-area, #board-save-pgn-area").addClass("hidden");
+  $("#board-load-fen-area")
+    .toggleClass("hidden")
+    .find("textarea")
+    .focus()
+    .select();
 });
 
 $("#board-load-fen-area button").click(function () {
@@ -160,23 +127,21 @@ $("#board-load-fen-area button").click(function () {
 });
 
 $("#board-load-fen-area textarea").keydown(function (e) {
-  e.preventDefault();
-  var code = e.keyCode ? e.keyCode : e.which;
-  if (code == 13) {
+  if (e.keyCode === 13) {
+    e.preventDefault();
     eventLoadFenData();
     $("#board-load-fen-area").addClass("hidden");
   }
 });
 
 function eventLoadFenData() {
-  var fenString = $("#board-load-fen-area textarea").val();
-  var gameValidation = game.validate_fen(fenString);
-  if (!gameValidation.valid) {
-    console.log(
-      "Error " + gameValidation.error_number + ": " + gameValidation.error
-    );
+  const fenString = $("#board-load-fen-area textarea").val();
+  const validation = game.validate_fen(fenString);
+  if (!validation.valid) {
+    console.error("FEN Error:", validation.error);
     return;
   }
+
   loadBoard(fenString);
   checkTurn();
   checkAnalyzeOption();
@@ -186,37 +151,30 @@ $("#board-load-fen-area .close").click(function () {
   $("#board-load-fen-area").addClass("hidden");
 });
 
+$("#board-save-pgn-area button, #board-save-pgn-area .close").click(
+  function () {
+    $("#board-save-pgn-area").addClass("hidden");
+  }
+);
+
 $("#board-save-pgn-area textarea").keydown(function (e) {
-  var code = e.keyCode ? e.keyCode : e.which;
-  if (code == 13) {
+  if (e.keyCode === 13) {
     $("#board-save-pgn-area").addClass("hidden");
   }
 });
 
-$("#board-save-pgn-area button").click(function () {
-  $("#board-save-pgn-area").addClass("hidden");
-});
-
-$("#board-save-pgn-area .close").click(function () {
-  $("#board-save-pgn-area").addClass("hidden");
-});
-
-// Analyze moves
-
+// Analyze
 $("#btn-analyze").click(function () {
-  if ($(this).hasClass("disabled")) {
-    console.log("Cannot analyze in opponent turn.");
-    return;
-  }
+  if ($(this).hasClass("disabled")) return;
   stateAnalyze = "grep";
-  $("#btn-analyze").addClass("disabled loading");
+  $(this).addClass("disabled loading");
   console.log("Analyze " + game.fen());
   stockfish.postMessage("position fen " + game.fen());
   stockfish.postMessage("go depth " + staticSkill);
 });
 
 function checkAnalyzeOption() {
-  if (game.turn() != playerSide) {
+  if (game.turn() !== playerSide) {
     $("#btn-analyze").addClass("disabled");
   } else {
     $("#btn-analyze").removeClass("disabled");
@@ -227,42 +185,58 @@ $("#btn-settings").click(function () {
   $("#game-difficulty-skill-settings").toggleClass("hidden");
 });
 
+// Choose white side
 $("#btn-choose-white-side").click(function () {
   if ($(this).hasClass("locked")) return;
-  $("#game-settings .btn").removeClass("selected");
-  $(this).addClass("selected");
   playerSide = "w";
   opponentSide = "b";
-  if (typeof board.setOrientation == "function") {
+
+  $("#game-settings .btn").removeClass("selected");
+  $(this).addClass("selected");
+  $("#game-settings .btn").addClass("locked");
+
+  if (typeof board.setOrientation === "function") {
     board.setOrientation(playerSide);
   } else {
     board.orientation("white");
   }
-  $("#game-settings .btn").addClass("locked");
+
+  // Remove side selection after choosing
+  $("#game-settings").addClass("hidden");
 });
 
+// Choose black side
 $("#btn-choose-black-side").click(function () {
   if ($(this).hasClass("locked")) return;
-  $("#game-settings .btn").removeClass("selected");
-  $(this).addClass("selected");
   playerSide = "b";
   opponentSide = "w";
-  if (typeof board.setOrientation == "function") {
+
+  $("#game-settings .btn").removeClass("selected");
+  $(this).addClass("selected");
+  $("#game-settings .btn").addClass("locked");
+
+  if (typeof board.setOrientation === "function") {
     board.setOrientation(playerSide);
   } else {
     board.orientation("black");
   }
+
   opponentTurn();
-  $("#game-settings .btn").addClass("locked");
+
+  // Remove side selection after choosing
+  $("#game-settings").addClass("hidden");
 });
 
+// Resign
 $("#btn-resign").click(function () {
   $("#board-resign-game-area").toggleClass("hidden");
 });
 
-$("#board-resign-game-area .close").click(function () {
-  $("#board-resign-game-area").addClass("hidden");
-});
+$("#board-resign-game-area .close, #board-resign-game-area .no").click(
+  function () {
+    $("#board-resign-game-area").addClass("hidden");
+  }
+);
 
 $("#board-resign-game-area .yes").click(function () {
   gameEnd = true;
@@ -270,9 +244,5 @@ $("#board-resign-game-area .yes").click(function () {
   $("#game-state").text("Game ended.").removeClass("hidden");
   $("#game-timer").addClass("hidden");
   $("#board").addClass("locked");
-  $("#board-resign-game-area").addClass("hidden");
-});
-
-$("#board-resign-game-area .no").click(function () {
   $("#board-resign-game-area").addClass("hidden");
 });
