@@ -85,7 +85,7 @@
           </div>
           <div id="board" class="board"></div>
         </div>
-        <div class="board-settings">
+        <div class="board-settings" id="bsid">
           <div class="apex">
             <span class="label-history">Game History</span>
             <div
@@ -217,6 +217,10 @@
       var desktopLibs = 8;
 
       var isMobile = is_touch_device();
+      if (!isMobile) {
+        document.getElementById("bsid").style.height = "465px";
+      }
+
       isMobile = false;
       if (isMobile == true) {
         var chess, board;
