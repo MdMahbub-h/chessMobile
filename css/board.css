@@ -105,7 +105,7 @@
 .chess-area .board-table .promotion {
   position: absolute;
   z-index: 1;
-  top: 155px;
+  top: 5px;
   height: 80px;
   width: 310px;
   display: flex;
@@ -751,7 +751,7 @@
 
   .chess-area .board-settings {
     max-width: 450px;
-    margin: 20px 0 30px 0;
+    margin: 0px 0 0px 0;
     padding: 2px;
   }
 
